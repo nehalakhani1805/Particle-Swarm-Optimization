@@ -13,17 +13,17 @@ class node:
 
 
 radius = 10
-nPart = 500
+numNodes = 500
 
 
 nodes = []
 
-neighbours = [[] for x in range (0, nPart)]
-E_tx_arr = [[] for x in range (0, nPart)]
-# costs = [1.0 for x in range(nPart)]
+neighbours = [[] for x in range (0, numNodes)]
+E_tx_arr = [[] for x in range (0, numNodes)]
+# costs = [1.0 for x in range(numNodes)]
 costs = []
 
-wt_T = [1.0 for x in range(nPart)]
+wt_T = [1.0 for x in range(numNodes)]
 
 N = 3 # Backnode black
 
@@ -49,16 +49,16 @@ nMax = 0 #neighbour max
 cMax = 0 #cost max
 
 
-for i in range(nPart):
+for i in range(numNodes):
 	x = random.randint(0, 100)
 	y = random.randint(0, 100)
 	n = node(x, y)
 	n.ind = i
 	nodes.append(n)
 
-for i in range(nPart):
+for i in range(numNodes):
 	count = 0
-	for j in range(nPart):
+	for j in range(numNodes):
 		if i != j:
 			if ((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2 < radius ** 2):
 				count += 1
@@ -96,36 +96,36 @@ def weight(i, neighbours, costs):
 
 
 # avg = 0
-# for i in range(nPart):
+# for i in range(numNodes):
 # 	avg += neighbours[i][-1]
 
-# print(avg / nPart)
+# print(avg / numNodes)
 
 
-def initNodes(nPart, nodes, neighbours, E_tx_arr):
-	for i in range(nPart):
+def initNodes(numNodes, nodes, neighbours, E_tx_arr):
+	for i in range(numNodes):
 		costPart(i, cMax, neighbours, E_tx_arr) # cost(i) initialization
-	for i in range(nPart):
+	for i in range(numNodes):
 		weight(i, neighbours, costs)
 
 
-initNodes(nPart, nodes, neighbours, E_tx_arr)
+initNodes(numNodes, nodes, neighbours, E_tx_arr)
 
-# for i in range(nPart):
+# for i in range(numNodes):
 # 	print(wt_T[i])
 
 
-col = [0 for x in range(nPart)]
+col = [0 for x in range(numNodes)]
 # 0 -> WHITE
 # 1 -> BLACK
 # 2 -> GREY
 
 
 
-def step1(nPart, nodes, wt_T):
+def step1(numNodes, nodes, wt_T):
 	ind = 0
 	maxWt = 0
-	for i in range(nPart):
+	for i in range(numNodes):
 		if wt_T[i] > maxWt:
 			ind = i
 			maxWt = wt_T[i]
@@ -149,10 +149,10 @@ def step1(nPart, nodes, wt_T):
 
 
 queue = collections.deque()
-def step2(nPart, nodes, neighbours, stInd):
+def step2(numNodes, nodes, neighbours, stInd):
 	ctr2 = 0
 	ctr = 0
-	# stInd = step1(nPart, nodes, wt_T)
+	# stInd = step1(numNodes, nodes, wt_T)
 	queue.append(nodes[stInd])
 	while(len(queue) != 0):
 		nl = sorted(neighbours[queue[0].ind][:-1], key = operator.attrgetter("weight"), reverse = True)
@@ -181,10 +181,10 @@ def step2(nPart, nodes, neighbours, stInd):
 		# print(queue)
 	print(ctr)
 	print(ctr2)
-	print(nPart - ctr)
+	print(numNodes - ctr)
 
 
-# step2(nPart, nodes, neighbours)
+# step2(numNodes, nodes, neighbours)
 
 
 
@@ -201,13 +201,13 @@ def step2(nPart, nodes, neighbours, stInd):
 	# 		col[neighbours[stInd][i].ind] = 2
 
 
-def step3(nPart, nodes, neighbours):
-	stInd = step1(nPart, nodes, wt_T)
-	step2(nPart, nodes, neighbours, stInd)
-	for i in range(nPart):
+def step3(numNodes, nodes, neighbours):
+	stInd = step1(numNodes, nodes, wt_T)
+	step2(numNodes, nodes, neighbours, stInd)
+	for i in range(numNodes):
 		if col[i] == 0:
-			step2(nPart, nodes, neighbours, i)
-	for i in range(nPart):
+			step2(numNodes, nodes, neighbours, i)
+	for i in range(numNodes):
 		if col[i] == 1:
 			flag = False
 			for j in range(neighbours[i][-1] - 1):
@@ -219,8 +219,8 @@ def step3(nPart, nodes, neighbours):
 
 
 ctr = 0
-step3(nPart, nodes, neighbours)
-for i in range(nPart):
+step3(numNodes, nodes, neighbours)
+for i in range(numNodes):
 	if col[i] == 1:
 		print("blac",i)
 		ctr += 1
