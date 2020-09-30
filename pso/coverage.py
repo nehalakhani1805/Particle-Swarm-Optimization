@@ -4,13 +4,15 @@ import random
 
 
 
-nPart = 300
-numNodes=backbone.numNodes
-nodes=backbone.nodes
+nPart = 100
+numNodes=backbone.ctrg
+nodes=backbone.ordinary
 radius=backbone.radius
 X = [[0 for y in range(numNodes)] for x in range(nPart)]
 #print(X)
 ro=0.75
+for i in range(len(nodes)):
+    nodes[i].indg=i
 
 class particle:
 	def __init__(self, x, y):
@@ -20,9 +22,9 @@ class particle:
 
 
 particles=[]
-for i in range(numNodes):
-	x = random.randint(0, 100)
-	y = random.randint(0, 100)
+for i in range(nPart):
+	x = random.randint(0, 400)
+	y = random.randint(0, 400)
 	n = particle(x, y)
 	n.ind = i
 	particles.append(n)
@@ -36,7 +38,7 @@ for i in range(nPart):
         dis_s_p[i][j]=math.sqrt(d)
         rad=radius**2
         if(d<=rad):
-            temp=1+ro*d
+            temp=1+ro*math.sqrt(d)
             cov_s_p[i][j]=1/(temp**2)
         else:
             cov_s_p[i][j]=0
@@ -58,7 +60,7 @@ cov_p=[]
 for i in range(len(R_particle)):
     temp=1
     for j in R_particle[i]:
-        temp=temp*(1-cov_s_p[i][j.ind])
+        temp=temp*(1-cov_s_p[i][j.indg])
     cov_p.append(1-temp)
 
 cov_s=[]
@@ -83,14 +85,45 @@ cov_p_without_s=[[0.0 for y in range(nPart)] for x in range(numNodes)]
 for i in range(numNodes):
     for j in range(nPart):
         for k in R_particle[j]:
-            if k.ind!=i:
-                temp=temp*(1-cov_s_p[j][k.ind])
+            if k.indg!=i:
+                temp=temp*(1-cov_s_p[j][k.indg])
         cov_p_without_s[i][j]=1-temp
-
-cov_s_without_s=[min(cov_p_without_s[i]) for i in range(nPart)]
-
+print(cov_p_without_s)
+cov_s_without_s=[min(cov_p_without_s[i]) for i in range(numNodes)]
+# cov_s_without_s=[]
+# for i in range(len(cov_p_without_s)):
+#     mini=9999
+#     for j in range(len(cov_p_without_s[i])):
+#         if cov_p_without_s[i][j]<mini:
+#             mini=cov_p_without_s[i][j]
+#     cov_s_without_s.append(mini)
 # for i in range(numNodes):
 #     if cov_s_without_s[i]<cov_s[i]:
 #         X[]
+awake=[]
+# print("without s")
+# for i in cov_s_without_s:
+#     print(i)
+#print("with s")
+#for i in cov_s:
+    #print(i)
+for i in range(numNodes):
+    if cov_s_without_s[i]<cov_s[i]:
+        awake.append(1)
+    else:
+        awake.append(0)
+
+for j in range(numNodes):
+    for k in R_node[j]:
+        X[k.ind][j]=awake[j]
+print(len(X))
+for i in range(len(X)):
+    if X[i].count(1)!=0:
+        print(X[i].count(1))
+
+
+
+    
+    
 
             

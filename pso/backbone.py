@@ -8,12 +8,13 @@ class node:
 		self.x = x
 		self.y = y
 		self.res = 50
-		self.q = 30 # random Q
+		self.q = 10 # random Q
 		self.weight = 0
+		self.indg=0
 
 
-radius = 10
-numNodes = 500
+radius = 45
+numNodes = 300
 
 
 nodes = []
@@ -25,7 +26,7 @@ costs = []
 
 wt_T = [1.0 for x in range(numNodes)]
 
-N = 3 # Backnode black
+N = 2 # Backnode black
 
 E_init = 2
 Efs = 10 #PJ/bit/m2
@@ -50,8 +51,8 @@ cMax = 0 #cost max
 
 
 for i in range(numNodes):
-	x = random.randint(0, 100)
-	y = random.randint(0, 100)
+	x = random.randint(0, 400)
+	y = random.randint(0, 400)
 	n = node(x, y)
 	n.ind = i
 	nodes.append(n)
@@ -157,13 +158,13 @@ def step2(numNodes, nodes, neighbours, stInd):
 	while(len(queue) != 0):
 		nl = sorted(neighbours[queue[0].ind][:-1], key = operator.attrgetter("weight"), reverse = True)
 		nl.append(neighbours[queue[0].ind][-1])
-		for i in neighbours[queue[0].ind][:-1]:
-			print("neigh ", queue[0].ind, " ",i.ind)
-		print("")
+		#for i in neighbours[queue[0].ind][:-1]:
+			#print("neigh ", queue[0].ind, " ",i.ind)
+		#print("")
 		# print(i.ind for i in neighbours[queue[0].ind])
 		neighbours[queue[0].ind] = nl
-		for i in neighbours[queue[0].ind][:-1]:
-			print("neigh ", queue[0].ind, " ",i.ind)
+		#for i in neighbours[queue[0].ind][:-1]:
+			#print("neigh ", queue[0].ind, " ",i.ind)
 		# print(i.ind for i in neighbours[queue[0].ind])
 		nTemp = N
 		for i in range(len(neighbours[queue[0].ind]) - 1):
@@ -172,16 +173,16 @@ def step2(numNodes, nodes, neighbours, stInd):
 					ctr += 1
 					col[neighbours[queue[0].ind][i].ind] = 1
 					queue.append(neighbours[queue[0].ind][i])
-					print("i", neighbours[queue[0].ind][i].ind)
+					#print("i", neighbours[queue[0].ind][i].ind)
 					nTemp -= 1
 				else:
 					ctr2 += 1
 					col[neighbours[queue[0].ind][i].ind] = 2
 		queue.popleft()
 		# print(queue)
-	print(ctr)
-	print(ctr2)
-	print(numNodes - ctr)
+	# print(ctr)
+	# print(ctr2)
+	# print(numNodes - ctr)
 
 
 # step2(numNodes, nodes, neighbours)
@@ -219,11 +220,17 @@ def step3(numNodes, nodes, neighbours):
 
 
 ctr = 0
+ctrg=0
+ordinary=[]
 step3(numNodes, nodes, neighbours)
 for i in range(numNodes):
 	if col[i] == 1:
-		print("blac",i)
+		#print("blac",i)
 		ctr += 1
-	if col[i] == 0:
-		print("whit",i)
-print(ctr)
+	#elif col[i] == 0:
+		#print("whit",i)
+	else:
+		ordinary.append(nodes[i])
+		ctrg+=1
+		#print(nodes[i].ind)
+#print(ctr)
