@@ -8,7 +8,7 @@ class node:
 		self.ind = 0
 		self.x = x
 		self.y = y
-		self.res = 50
+		self.res = 1.5
 		self.q = random.randint(10,20) # random Q
 		self.weight = 0
 		self.indg=0
@@ -267,15 +267,15 @@ for i in range(numNodes):
 		ctrg+=1
 		#print(nodes[i].ind)
 #print(ctr)
-print("Backbone before")
+# print("Backbone before")
 for i in range(len(backbone_nodes)):
 	print(backbone_nodes[i].ind)
 backbone_nodes[0].res=0
 backbone2(nodes,numNodes, backbone_nodes, neighbours)
-print("Backbone after")
+# print("Backbone after")
 for i in range(len(backbone_nodes)):
 	print(backbone_nodes[i].ind)
-print("Backbone done")
+# print("Backbone done")
 
 
 

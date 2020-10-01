@@ -8,7 +8,7 @@ nPart = 100
 numNodes=backbone.ctrg
 nodes=backbone.ordinary
 radius=backbone.radius
-print(numNodes)
+# print(numNodes)
 X = [[0 for y in range(numNodes)] for x in range(nPart)]
 #print(X)
 ro=0.03
@@ -120,7 +120,7 @@ for j in range(numNodes):
     for k in R_node[j]:
         X[k.ind][j]=awake[j]
 s=0
-print(len(X))
+# print(len(X))
 for i in range(len(X)):
     if X[i].count(1)!=0:
         #print(X[i].count(1))
