@@ -1,16 +1,17 @@
 import backbone
 import math
 import random
-
+random.seed(10)
 
 
 nPart = 100
 numNodes=backbone.ctrg
 nodes=backbone.ordinary
 radius=backbone.radius
+print(numNodes)
 X = [[0 for y in range(numNodes)] for x in range(nPart)]
 #print(X)
-ro=0.75
+ro=0.03
 for i in range(len(nodes)):
     nodes[i].indg=i
 
@@ -40,6 +41,7 @@ for i in range(nPart):
         if(d<=rad):
             temp=1+ro*math.sqrt(d)
             cov_s_p[i][j]=1/(temp**2)
+            #print(cov_s_p[i][j])
         else:
             cov_s_p[i][j]=0
 #R_node matlab all the particles in the radius of a particular node
@@ -84,11 +86,12 @@ cov_p_without_s=[[0.0 for y in range(nPart)] for x in range(numNodes)]
 
 for i in range(numNodes):
     for j in range(nPart):
+        temp=1
         for k in R_particle[j]:
             if k.indg!=i:
                 temp=temp*(1-cov_s_p[j][k.indg])
         cov_p_without_s[i][j]=1-temp
-print(cov_p_without_s)
+#print(cov_p_without_s)
 cov_s_without_s=[min(cov_p_without_s[i]) for i in range(numNodes)]
 # cov_s_without_s=[]
 # for i in range(len(cov_p_without_s)):
@@ -116,10 +119,13 @@ for i in range(numNodes):
 for j in range(numNodes):
     for k in R_node[j]:
         X[k.ind][j]=awake[j]
+s=0
 print(len(X))
 for i in range(len(X)):
     if X[i].count(1)!=0:
-        print(X[i].count(1))
+        #print(X[i].count(1))
+        s+=X[i].count(1)
+#print(s)
 
 
 

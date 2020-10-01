@@ -2,13 +2,14 @@ import random
 import math
 import operator
 import  collections
+random.seed(10)
 class node:
 	def __init__(self, x, y):
 		self.ind = 0
 		self.x = x
 		self.y = y
 		self.res = 50
-		self.q = 10 # random Q
+		self.q = random.randint(10,20) # random Q
 		self.weight = 0
 		self.indg=0
 
@@ -217,15 +218,47 @@ def step3(numNodes, nodes, neighbours):
 			if(not flag):
 				col[i] = 2
 
+#BACKBONE 2
+def check(backbone_nodes):
+	for i in backbone_nodes:
+		if i.res==0:
+			return i.ind
 
+	return -1
+
+def backbone2(nodes,numNodes, backbone_nodes, neighbours):
+	candidates=[] #grey neighbours
+	n_of_n=[]
+	temp=check(backbone_nodes)
+	if temp!=-1:
+		backbone_nodes.remove(nodes[temp])
+		for i in range(len(neighbours[temp])-1):
+			if col[neighbours[temp][i].ind]==2:
+				candidates.append(neighbours[temp][i])
+		for i in range(len(candidates)):
+			flag=False
+			n_of_n=neighbours[candidates[i].ind]
+			for j in range(len(n_of_n)):
+				n3=neighbours[n_of_n[j].ind]
+				for k in range(len(n_of_n)):
+					if k!=j:
+						n4=neighbours[n_of_n[k].ind]
+						if n_of_n[j] not in n4 and n_of_n[k] not in n3:
+							backbone_nodes.append(candidates[i])
+							flag=True
+							break
+				if flag:
+					break
 
 ctr = 0
 ctrg=0
 ordinary=[]
+backbone_nodes=[]
 step3(numNodes, nodes, neighbours)
 for i in range(numNodes):
 	if col[i] == 1:
 		#print("blac",i)
+		backbone_nodes.append(nodes[i])
 		ctr += 1
 	#elif col[i] == 0:
 		#print("whit",i)
@@ -234,3 +267,22 @@ for i in range(numNodes):
 		ctrg+=1
 		#print(nodes[i].ind)
 #print(ctr)
+print("Backbone before")
+for i in range(len(backbone_nodes)):
+	print(backbone_nodes[i].ind)
+backbone_nodes[0].res=0
+backbone2(nodes,numNodes, backbone_nodes, neighbours)
+print("Backbone after")
+for i in range(len(backbone_nodes)):
+	print(backbone_nodes[i].ind)
+print("Backbone done")
+
+
+
+
+
+
+
+
+		
+
