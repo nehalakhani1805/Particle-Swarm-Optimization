@@ -1,4 +1,5 @@
 import coverage
+import backbone2
 import numpy as np
 import fitness
 import random
@@ -10,6 +11,8 @@ plt.xlim((0,400))
 plt.ylim((0,400))
 plt.scatter(200,200,c='y',marker='v',s=200)
 import time
+
+backbone_nodes = coverage.backbone.backbone_nodes
 
 print("Inside iter")
 numNodes=coverage.backbone.numNodes
@@ -47,6 +50,11 @@ c1=0.4
 c2=0.4
 
 
+ctr = coverage.backbone.ctr
+ctrg = coverage.backbone.ctrg
+col = coverage.backbone.col
+
+
 def crossover(a,b):
     temp=[]
     for i in range(len(a)):
@@ -61,7 +69,7 @@ diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
 #     print(diction[i].ind)
 
 for t in range(numIter):
-    print(nodes[backbone_nodes[0].ind].res)
+    # print(nodes[backbone_nodes[0].ind].res)
     for i in range(len(X)):
         fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i)
         if fX[i]<fpbest[i]:
@@ -70,22 +78,31 @@ for t in range(numIter):
             if fX[i]<fgbest:
                 fgbest=fX[i]
                 xgbest=X[i]
-    for i in range(len(ordNodes)):
-        bb=diction[ordNodes[i]]
-        dist=math.sqrt((ordNodes[i].x-bb.x)**2 + (ordNodes[i].y-bb.y)**2)
-        if ordNodes[i].res>=0:
-            ordNodes[i].res-=0.01*dist
-            if ordNodes[i].res<=0:
-                ordNodes[i].res=0
+    for i in ordNodes:
+        bb=diction[i]
+        dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2)
+        if i.res>=0:
+            i.res-=0.01*dist
+            if i.res<=0:
+                i.res=0
+                i.alive = False
+
         dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2)
         if(nodes[bb.ind].res>=0):
             nodes[bb.ind].res -= 0.01*dist
             if(nodes[bb.ind].res<=0):
                 nodes[bb.ind].res=0
+                nodes[bb.ind].alive = False
+
+                ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
             else:
                 nodes[bb.ind].res -= 0.005*dist2
                 if(nodes[bb.ind].res<=0):
                     nodes[bb.ind].res=0
+                    nodes[bb.ind].alive = False
+                    ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                    diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
     
     for i in range(len(xgbest)):
         if(xgbest[i] == 0):
@@ -124,7 +141,7 @@ for t in range(numIter):
         #     print("After C")
         #     print(X[i].count(1))
 
-print(xgbest.count(1))
+# print(xgbest.count(1))
 
 
 

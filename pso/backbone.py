@@ -12,6 +12,7 @@ class node:
 		self.q = random.randint(10,20) # random Q
 		self.weight = 0
 		self.indg=0
+		self.alive = True
 
 
 radius = 45
@@ -230,40 +231,6 @@ def check(backbone_nodes):
 
 	return -1
 
-def backbone2(nodes,numNodes, backbone_nodes, neighbours):
-	global ctrg
-	global ctr
-	candidates=[] #grey neighbours
-	n_of_n=[]
-	new_backbone=[]
-	temp=check(backbone_nodes)
-	if temp!=-1:
-		backbone_nodes.remove(nodes[temp])
-		ctr-=1
-		for i in range(len(neighbours[temp])-1):
-			if col[neighbours[temp][i].ind]==2:
-				candidates.append(neighbours[temp][i])
-		for i in range(len(candidates)):
-			flag=False
-			n_of_n=neighbours[candidates[i].ind]
-			for j in range(len(n_of_n)):
-				n3=neighbours[n_of_n[j].ind]
-				for k in range(len(n_of_n)):
-					if k!=j:
-						n4=neighbours[n_of_n[k].ind]
-						if n_of_n[j] not in n4 and n_of_n[k] not in n3:
-							backbone_nodes.append(candidates[i])
-							ordinary.remove(candidates[i])
-							new_backbone.append(candidates[i])
-							ctrg-=1
-							ctr+=1
-							#ctr+=1
-							return
-							flag=True
-							break
-				if flag:
-					break
-
 
 ordinary=[]
 backbone_nodes=[]
@@ -288,8 +255,8 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary):
 	# print("Backbone before")
 	for i in range(len(backbone_nodes)):
 		print(backbone_nodes[i].ind)
-	backbone_nodes[0].res=0
-	backbone2(nodes,numNodes, backbone_nodes, neighbours)
+	# backbone_nodes[0].res=0
+	# backbone2(nodes,numNodes, backbone_nodes, neighbours)
 	# print("Backbone after")
 	for i in range(len(backbone_nodes)):
 		print(backbone_nodes[i].ind)
