@@ -2,6 +2,7 @@ import coverage
 import numpy as np
 import fitness
 import random
+import math
 
 print("Inside iter")
 numNodes=coverage.backbone.numNodes
@@ -15,11 +16,12 @@ cov_s_without_s=coverage.cov_s_without_s
 cov_s=coverage.cov_s
 X=coverage.X
 radius=coverage.backbone.radius
-numIter=2
+numIter=70
 sink_x = 200
 sink_y = 200
 E_init=coverage.backbone.E_init
 alpha=coverage.backbone.alpha
+backbone_nodes=coverage.backbone.backbone_nodes
 #print("Inside iter")
 #print(X)
 
@@ -47,9 +49,12 @@ def crossover(a,b):
         else:
             temp.append(b[i])
     return temp
-
+diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+# for i in diction:
+#     print(diction[i].ind)
 
 for t in range(numIter):
+    print(nodes[backbone_nodes[0].ind].res)
     for i in range(len(X)):
         fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i)
         if fX[i]<fpbest[i]:
@@ -58,10 +63,23 @@ for t in range(numIter):
             if fX[i]<fgbest:
                 fgbest=fX[i]
                 xgbest=X[i]
-    #for i in range
-        #CHANGE ENERGY\
-    print("Before changes")
-    print(X[1].count(1))
+    for i in range(len(ordNodes)):
+        bb=diction[ordNodes[i]]
+        dist=math.sqrt((ordNodes[i].x-bb.x)**2 + (ordNodes[i].y-bb.y)**2)
+        if ordNodes[i].res>=0:
+            ordNodes[i].res-=0.01*dist
+            if ordNodes[i].res<=0:
+                ordNodes[i].res=0
+        dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2)
+        if(nodes[bb.ind].res>=0):
+            nodes[bb.ind].res -= 0.01*dist
+            if(nodes[bb.ind].res<=0):
+                nodes[bb.ind].res=0
+            else:
+                nodes[bb.ind].res -= 0.005*dist2
+                if(nodes[bb.ind].res<=0):
+                    nodes[bb.ind].res=0
+    
     for i in range(len(X)):
         r1=random.random()
         w=wmin+(wmax-wmin)*(numIter-t)/numIter
@@ -85,6 +103,8 @@ for t in range(numIter):
         # if i==1:
         #     print("After C")
         #     print(X[i].count(1))
+
+print(xgbest.count(1))
 
 
     

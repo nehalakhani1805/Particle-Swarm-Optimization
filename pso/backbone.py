@@ -8,7 +8,7 @@ class node:
 		self.ind = 0
 		self.x = x
 		self.y = y
-		self.res = 1.5
+		self.res = 30
 		self.q = random.randint(10,20) # random Q
 		self.weight = 0
 		self.indg=0
@@ -29,7 +29,7 @@ wt_T = [1.0 for x in range(numNodes)]
 
 N = 2 # Backnode black
 
-E_init = 2
+E_init = 30
 Efs = 10 #PJ/bit/m2
 k = 1000 #bits
 EDA = 5 #nJ/bit/signal
@@ -294,6 +294,19 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary):
 	for i in range(len(backbone_nodes)):
 		print(backbone_nodes[i].ind)
 	# print("Backbone done")
+
+def assign_head(backbone_nodes, ordinary):
+	diction={}
+	for i in range(len(ordinary)):
+		mini=math.inf
+		for j in range(len(backbone_nodes)):
+			temp=(ordinary[i].x - backbone_nodes[j].x) ** 2 + (ordinary[i].y - backbone_nodes[j].y)**2
+			if (temp< mini):
+				mini=temp
+				minnode=backbone_nodes[j]
+		diction[ordinary[i]]=minnode
+	return diction
+# print(diction)
 
 
 if __name__ != '__main__':
