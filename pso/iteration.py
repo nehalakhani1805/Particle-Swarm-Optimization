@@ -3,6 +3,13 @@ import numpy as np
 import fitness
 import random
 import math
+import matplotlib.pyplot as plt
+plt.ion()
+fig, ax = plt.subplots(1,1,figsize=(8,8))
+plt.xlim((0,400))
+plt.ylim((0,400))
+plt.scatter(200,200,c='y',marker='v',s=200)
+import time
 
 print("Inside iter")
 numNodes=coverage.backbone.numNodes
@@ -16,7 +23,7 @@ cov_s_without_s=coverage.cov_s_without_s
 cov_s=coverage.cov_s
 X=coverage.X
 radius=coverage.backbone.radius
-numIter=70
+numIter=20
 sink_x = 200
 sink_y = 200
 E_init=coverage.backbone.E_init
@@ -80,6 +87,19 @@ for t in range(numIter):
                 if(nodes[bb.ind].res<=0):
                     nodes[bb.ind].res=0
     
+    for i in range(len(xgbest)):
+        if(xgbest[i] == 0):
+            plt.scatter(ordNodes[i].x,ordNodes[i].y,c='b')
+        else:
+            plt.scatter(ordNodes[i].x,ordNodes[i].y,c='r')
+
+    xcords = [i.x for i in backbone_nodes]
+    ycords = [i.y for i in backbone_nodes]
+    plt.scatter(xcords, ycords, c='k')
+    fig.canvas.draw()
+    fig.canvas.flush_events()
+    time.sleep(0.5)
+
     for i in range(len(X)):
         r1=random.random()
         w=wmin+(wmax-wmin)*(numIter-t)/numIter
@@ -105,6 +125,7 @@ for t in range(numIter):
         #     print(X[i].count(1))
 
 print(xgbest.count(1))
+
 
 
     
