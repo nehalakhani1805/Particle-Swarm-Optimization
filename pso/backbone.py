@@ -17,11 +17,11 @@ class node:
 radius = 45
 numNodes = 300
 
+ 
+#nodes = [] TO MAIN
 
-nodes = []
-
-neighbours = [[] for x in range (0, numNodes)]
-E_tx_arr = [[] for x in range (0, numNodes)]
+#neighbours = [[] for x in range (0, numNodes)] TO MAIN
+#E_tx_arr = [[] for x in range (0, numNodes)] TO MAIN
 # costs = [1.0 for x in range(numNodes)]
 costs = []
 
@@ -37,9 +37,9 @@ Eelec = 50 #nJ/bit
 Eamp = 0.0013 #PJ/bit/m4
 d0 = 90 #m
 n = 300
-α = 0.35
-β = 0.45
-δ = 0.2
+alpha = 0.35
+beta = 0.45
+gamma = 0.2
 wmin = 0.4
 
 
@@ -47,27 +47,30 @@ w1 = 0.3
 w2 = 0.4
 w3 = 0.3 # w for Backbone
 
-nMax = 0 #neighbour max
+#nMax = 0 #neighbour max TO MAIN
 cMax = 0 #cost max
 
+def initNodes_rand(nodes,numNodes):
+	for i in range(numNodes):
+		x = random.randint(0, 400)
+		y = random.randint(0, 400)
+		n = node(x, y)
+		n.ind = i
+		nodes.append(n)
+	return nodes
 
-for i in range(numNodes):
-	x = random.randint(0, 400)
-	y = random.randint(0, 400)
-	n = node(x, y)
-	n.ind = i
-	nodes.append(n)
-
-for i in range(numNodes):
-	count = 0
-	for j in range(numNodes):
-		if i != j:
-			if ((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2 < radius ** 2):
-				count += 1
-				neighbours[i].append(nodes[j])
-	neighbours[i].append(count)
-	if count > nMax:
-		nMax = count
+def initNeighbours(nodes,numNodes,neighbours,nMax):
+	for i in range(numNodes):
+		count = 0
+		for j in range(numNodes):
+			if i != j:
+				if ((nodes[i].x - nodes[j].x) ** 2 + (nodes[i].y - nodes[j].y) ** 2 < radius ** 2):
+					count += 1
+					neighbours[i].append(nodes[j])
+		neighbours[i].append(count)
+		if count > nMax:
+			nMax = count
+	return neighbours,nMax
 
 
 def costPart(i,cMax, neighbours, E_tx_arr):
@@ -111,7 +114,7 @@ def initNodes(numNodes, nodes, neighbours, E_tx_arr):
 		weight(i, neighbours, costs)
 
 
-initNodes(numNodes, nodes, neighbours, E_tx_arr)
+#initNodes(numNodes, nodes, neighbours, E_tx_arr) TO MAIN
 
 # for i in range(numNodes):
 # 	print(wt_T[i])
@@ -150,8 +153,9 @@ def step1(numNodes, nodes, wt_T):
 
 
 
-queue = collections.deque()
+#queue = collections.deque() INSIDE STEP2
 def step2(numNodes, nodes, neighbours, stInd):
+	queue = collections.deque()
 	ctr2 = 0
 	ctr = 0
 	# stInd = step1(numNodes, nodes, wt_T)
@@ -227,11 +231,15 @@ def check(backbone_nodes):
 	return -1
 
 def backbone2(nodes,numNodes, backbone_nodes, neighbours):
+	global ctrg
+	global ctr
 	candidates=[] #grey neighbours
 	n_of_n=[]
+	new_backbone=[]
 	temp=check(backbone_nodes)
 	if temp!=-1:
 		backbone_nodes.remove(nodes[temp])
+		ctr-=1
 		for i in range(len(neighbours[temp])-1):
 			if col[neighbours[temp][i].ind]==2:
 				candidates.append(neighbours[temp][i])
@@ -245,39 +253,59 @@ def backbone2(nodes,numNodes, backbone_nodes, neighbours):
 						n4=neighbours[n_of_n[k].ind]
 						if n_of_n[j] not in n4 and n_of_n[k] not in n3:
 							backbone_nodes.append(candidates[i])
+							ordinary.remove(candidates[i])
+							new_backbone.append(candidates[i])
+							ctrg-=1
+							ctr+=1
+							#ctr+=1
+							return
 							flag=True
 							break
 				if flag:
 					break
 
-ctr = 0
-ctrg=0
+
 ordinary=[]
 backbone_nodes=[]
-step3(numNodes, nodes, neighbours)
-for i in range(numNodes):
-	if col[i] == 1:
-		#print("blac",i)
-		backbone_nodes.append(nodes[i])
-		ctr += 1
-	#elif col[i] == 0:
-		#print("whit",i)
-	else:
-		ordinary.append(nodes[i])
-		ctrg+=1
-		#print(nodes[i].ind)
-#print(ctr)
-# print("Backbone before")
-for i in range(len(backbone_nodes)):
-	print(backbone_nodes[i].ind)
-backbone_nodes[0].res=0
-backbone2(nodes,numNodes, backbone_nodes, neighbours)
-# print("Backbone after")
-for i in range(len(backbone_nodes)):
-	print(backbone_nodes[i].ind)
-# print("Backbone done")
+ctr=0
+ctrg=0
+#step3(numNodes, nodes, neighbours) TO MAIN\
+def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary):
+	global ctr
+	global ctrg
+	for i in range(numNodes):
+		if col[i] == 1:
+			#print("blac",i)
+			backbone_nodes.append(nodes[i])
+			ctr += 1
+		#elif col[i] == 0:
+			#print("whit",i)
+		else:
+			ordinary.append(nodes[i])
+			ctrg+=1
+			#print(nodes[i].ind)
+	#print(ctr)
+	# print("Backbone before")
+	for i in range(len(backbone_nodes)):
+		print(backbone_nodes[i].ind)
+	backbone_nodes[0].res=0
+	backbone2(nodes,numNodes, backbone_nodes, neighbours)
+	# print("Backbone after")
+	for i in range(len(backbone_nodes)):
+		print(backbone_nodes[i].ind)
+	# print("Backbone done")
 
 
+if __name__ != '__main__':
+	nodes=[]
+	neighbours = [[] for x in range (0, numNodes)]
+	nMax=0
+	E_tx_arr = [[] for x in range (0, numNodes)] 
+	nodes=initNodes_rand(nodes,numNodes)
+	neighbours,nMax=initNeighbours(nodes,numNodes,neighbours,nMax)
+	initNodes(numNodes, nodes, neighbours, E_tx_arr)
+	step3(numNodes, nodes, neighbours)
+	testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary)
 
 
 
