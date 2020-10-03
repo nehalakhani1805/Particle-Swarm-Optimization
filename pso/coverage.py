@@ -65,7 +65,7 @@ def find_cov():
         for j in R_particle[i]: #traverse through each list in R_particle
             temp=temp*(1-cov_s_p[i][j.indg]) #formula given in the paper to find overlap of the point
         cov_p.append(1-temp)
-]
+
     for i in range(len(R_node)):  #traverse through R_node
         mini=math.inf       
         for j in R_node[i]:     #traverse through each list in R_node
