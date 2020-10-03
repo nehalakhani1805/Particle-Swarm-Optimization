@@ -27,8 +27,8 @@ nPart=coverage.nPart #Total number of particles
 particles=coverage.particles #Import the list which contains the particles.
 ordNodes=coverage.ordNodes #Import the list which contains the ordinary nodes, i.e, nodes not part of the backbone structure.
 numOrdNodes=coverage.numOrdNodes #Total number of ordinary nodes
-cov_s_without_s=coverage.cov_s_without_s #Import the list which contains the ###NAHI SAMJHA
-cov_s=coverage.cov_s #NAHI SAMJHA
+cov_s=coverage.cov_s #Import the list which contains the coverage of each sensor node s
+cov_s_without_s=coverage.cov_s_without_s #Import the list which contains the coverage of each sensor node s without including the sensor s
 X=coverage.X #Import the 2-D list which has the dimensions of nPart x numNodes
 
 
@@ -56,7 +56,7 @@ wmin=0.4
 c1=0.4
 c2=0.4
 
-ctr = coverage.backbone #ctr represents the number of backbone nodes.
+ctr = coverage.backbone.ctr #ctr represents the number of backbone nodes.
 ctrg = coverage.backbone.ctrg #ctrg represents the number of ordinary nodes.
 col = coverage.backbone.col #Import the list of size numNodes which contains the colour assigned to each node. 
                             #The colours can be black, gray or white.

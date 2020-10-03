@@ -6,7 +6,7 @@ random.seed(10)
 
 nPart = 100  #number of particles is arbitrarily 100
 numOrdNodes=backbone.ctrg #count of the ordinary nodes are stored in the variable numOrdNodes
-ordNodes=backbone.ordinary #list of ordinary nodes is stored in ordNodes
+ordNodes=backbone.ordNodes #list of ordinary nodes is stored in ordNodes
 radius=backbone.radius #radius stores the radius of range of each sensor node
 X = [[0 for y in range(numOrdNodes)] for x in range(nPart)] #encoding function - array which stores 0 or 1. 0 means node is in sleep state. 1 means it is awake
 ro=0.03 #adjustment parameter
