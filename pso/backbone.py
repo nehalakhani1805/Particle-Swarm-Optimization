@@ -13,6 +13,7 @@ class node:
 		self.weight = 0
 		self.indg=0
 		self.alive = True
+		self.ordInd = -1
 
 
 radius = 45
@@ -248,6 +249,7 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary):
 		#elif col[i] == 0:
 			#print("whit",i)
 		else:
+			nodes[i].ordInd = ctrg
 			ordinary.append(nodes[i])
 			ctrg+=1
 			#print(nodes[i].ind)

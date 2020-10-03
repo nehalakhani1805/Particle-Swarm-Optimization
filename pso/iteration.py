@@ -26,11 +26,12 @@ cov_s_without_s=coverage.cov_s_without_s
 cov_s=coverage.cov_s
 X=coverage.X
 radius=coverage.backbone.radius
-numIter=20
+numIter=5
 sink_x = 200
 sink_y = 200
 E_init=coverage.backbone.E_init
 alpha=coverage.backbone.alpha
+gamma=coverage.backbone.gamma
 backbone_nodes=coverage.backbone.backbone_nodes
 #print("Inside iter")
 #print(X)
@@ -71,13 +72,14 @@ diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
 for t in range(numIter):
     # print(nodes[backbone_nodes[0].ind].res)
     for i in range(len(X)):
-        fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i)
+        fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i) + gamma*fitness.fx3_func(numOrdNodes,X,radius,ordNodes,i)
         if fX[i]<fpbest[i]:
             fpbest[i]=fX[i]
             xpbest[i]=X[i]
             if fX[i]<fgbest:
                 fgbest=fX[i]
                 xgbest=X[i]
+    
     for i in ordNodes:
         bb=diction[i]
         dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2)
@@ -104,12 +106,17 @@ for t in range(numIter):
                     ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
                     diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
     
-    for i in range(len(xgbest)):
-        if(xgbest[i] == 0):
-            plt.scatter(ordNodes[i].x,ordNodes[i].y,c='b')
+    for i in ordNodes:
+        if(xgbest[i.ordInd] == 0):
+            plt.scatter(i.x,i.y,c='b')
         else:
-            plt.scatter(ordNodes[i].x,ordNodes[i].y,c='r')
+            plt.scatter(i.x,i.y,c='r')
 
+    # for i in ordNodes:
+    #     if(i.xBest == 0):
+    #         plt.scatter(i.x,i.y,c='b')
+    #     else:
+    #         plt.scatter(i.x,i.y,c='r')
     xcords = [i.x for i in backbone_nodes]
     ycords = [i.y for i in backbone_nodes]
     plt.scatter(xcords, ycords, c='k')
