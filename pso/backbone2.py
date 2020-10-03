@@ -9,7 +9,7 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 	#ctrg - number of ordinary nodes
 	#temp - index of the dead node
 	#col - array of colors of nodes, 0-> white, 1 ->black, 2->grey
-	candidates=[] #neighbouring nodes of the dead backbone node who are grey in color
+	candidates=[] #list to store neighbouring nodes of the dead backbone node who are grey in color
 	n_of_n=[] #array which stores the neighbours of the above grey nodes
 	new_backbone=[] #new array which consists of only the new nodes added to the backbone and not the whole backbone
 	backbone_nodes.remove(nodes[temp]) #temp is the index of the dead node, that node is removed from the existing backbone
@@ -38,5 +38,5 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 						ctr+=1 								#increase the number of backbone nodes by 1
 						return ordNodes,backbone_nodes,ctrg
 
-	return ordNodes,backbone_nodes,ctrg  #return the ordinary nodes, backbone nodes and the number of ordinary nodes
+	return ordNodes,backbone_nodes,ctrg  #return the ordinary nodes, backbone nodes and the count of ordinary nodes
 
