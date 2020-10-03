@@ -7,7 +7,7 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 	new_backbone=[]
 	backbone_nodes.remove(nodes[temp])
 	ctr-=1
-	for i in range(len(neighbours[temp])-1):
+	for i in range(0,len(neighbours[temp])-1):
 		if col[neighbours[temp][i].ind]==2:
 			candidates.append(neighbours[temp][i])
 	for i in range(len(candidates)):
@@ -15,7 +15,7 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 			continue
 		flag=False
 		n_of_n=neighbours[candidates[i].ind]
-		for j in range(len(n_of_n)):
+		for j in range(0,len(n_of_n)-1):
 			n3=neighbours[n_of_n[j].ind]
 			for k in range(len(n_of_n)):
 				if k!=j and k!=len(n_of_n)-1:
@@ -35,4 +35,5 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 						# break
 			if flag:
 				break
+	return ordNodes,backbone_nodes,ctrg
 

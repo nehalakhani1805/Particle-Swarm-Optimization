@@ -2,7 +2,7 @@ import random
 import math
 import operator
 import  collections
-random.seed(20)
+random.seed(10)
 class node:
 	def __init__(self, x, y):
 		self.ind = 0
@@ -18,7 +18,7 @@ class node:
 
 
 radius = 45
-numNodes = 500
+numNodes = 300
 
  
 #nodes = [] TO MAIN
