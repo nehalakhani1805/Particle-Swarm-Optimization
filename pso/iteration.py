@@ -6,7 +6,7 @@ import random
 import math
 import time
 import matplotlib.pyplot as plt
-#The library below is for interactive graph. To be used only if the user wants to see changes in the graph after every 20 iterations.
+#The library below is for interactive graph. To be used only if the user wants to see changes in the graph after every 10 iterations.
 #plt.ion()
 #Declaring the parameters for graph according to matplotlib syntax.
 fig, ax = plt.subplots(1,1,figsize=(8,8))
@@ -156,6 +156,7 @@ for t in range(numIter):
         #Backbone nodes = BLACK
         #Dead nodes = YELLOW with a BLACK outline
         #Sink node = A large YELLOW triangle
+        
         # for i in ordNodes: #Iterate through all the ordinary nodes
         #     if (i.alive==True): #Check if the node is alive
         #         if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
