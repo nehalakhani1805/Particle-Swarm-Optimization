@@ -37,8 +37,11 @@ def fx1_func(numOrdNodes,X,E_init,ordNodes,i):
 	fX1 = 1 - (sum_temp / numOrdNodes * E_init)
 	return fX1
 
+#norm = [float(i)/sum(raw) for i in raw]
 
-def fx2_func():
+def fx2_func(numOrdNodes,X,ordNodes,particles,neighbours,sink_x,sink_y,nPart):
+	fx2_temp=[]
+	fX2 = [0 for x in range(nPart)]
 	for ii, i in enumerate(X):
 		sum_f = 0
 		for j in range(numOrdNodes):
@@ -49,10 +52,11 @@ def fx2_func():
 				dis_ij = math.sqrt((tx - ordNodes[k].x) ** 2 + (ty - ordNodes[k].y) ** 2)
 				dis_sinkj = math.sqrt((tx - sink_x) ** 2 + (ty - sink_y) ** 2)
 				sum_temp += (dis_sinkj - dis_ij) ** 2
-				print(dis_ij, " ", dis_sinkj)
+				#print(dis_ij, " ", dis_sinkj)
 			sum_f += math.sqrt(sum_temp / neighbours[ordNodes[j].ind][-1])
 		fX2[ii] = sum_f
-
+	fx2_temp = [float(i)/sum(fX2) for i in fX2]
+	return fx2_temp
 
 def fx3_func(numOrdNodes,X,radius,ordNodes,i):
 	fx3 = 0

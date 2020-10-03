@@ -21,12 +21,14 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 				if k!=j and k!=len(n_of_n)-1:
 					n4=neighbours[n_of_n[k].ind]
 					if n_of_n[j] not in n4 and n_of_n[k] not in n3:
+						candidates[i].res+=50
+						candidates[i].einit+=50
 						backbone_nodes.append(candidates[i])
 						if candidates[i] in ordNodes:
 							ordNodes.remove(candidates[i])
-							new_backbone.append(candidates[i])
-							ctrg-=1
-							ctr+=1
+							ctrg-=1							
+						new_backbone.append(candidates[i])
+						ctr+=1
 						#ctr+=1
 						return ordNodes,backbone_nodes,ctrg
 						# flag=True

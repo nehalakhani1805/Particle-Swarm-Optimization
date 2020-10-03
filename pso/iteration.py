@@ -26,11 +26,12 @@ cov_s_without_s=coverage.cov_s_without_s
 cov_s=coverage.cov_s
 X=coverage.X
 radius=coverage.backbone.radius
-numIter=5
+numIter=39
 sink_x = 200
 sink_y = 200
 E_init=coverage.backbone.E_init
 alpha=coverage.backbone.alpha
+beta=coverage.backbone.beta
 gamma=coverage.backbone.gamma
 backbone_nodes=coverage.backbone.backbone_nodes
 #print("Inside iter")
@@ -71,8 +72,10 @@ diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
 
 for t in range(numIter):
     # print(nodes[backbone_nodes[0].ind].res)
+    print("iteration number ",t)
+    temp=fitness.fx2_func(numOrdNodes,X,ordNodes,particles,neighbours,sink_x,sink_y,nPart)
     for i in range(len(X)):
-        fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i) + gamma*fitness.fx3_func(numOrdNodes,X,radius,ordNodes,i)
+        fX[i]=alpha*fitness.fx1_func(numOrdNodes,X,E_init,ordNodes,i) + beta*temp[i] + gamma*fitness.fx3_func(numOrdNodes,X,radius,ordNodes,i)
         if fX[i]<fpbest[i]:
             fpbest[i]=fX[i]
             xpbest[i]=X[i]
@@ -91,7 +94,7 @@ for t in range(numIter):
 
         dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2)
         if(nodes[bb.ind].res>=0):
-            nodes[bb.ind].res -= 0.01*dist
+            nodes[bb.ind].res -= 0.0075*dist
             if(nodes[bb.ind].res<=0):
                 nodes[bb.ind].res=0
                 nodes[bb.ind].alive = False
@@ -99,30 +102,36 @@ for t in range(numIter):
                 ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
                 diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
             else:
-                nodes[bb.ind].res -= 0.005*dist2
+                nodes[bb.ind].res -= 0.0075*dist2
                 if(nodes[bb.ind].res<=0):
                     nodes[bb.ind].res=0
                     nodes[bb.ind].alive = False
                     ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
                     diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
     
-    for i in ordNodes:
-        if(xgbest[i.ordInd] == 0):
-            plt.scatter(i.x,i.y,c='b')
-        else:
-            plt.scatter(i.x,i.y,c='r')
+    if t%10==8:
+        for i in ordNodes:
+            if (i.alive==True):
+                if(xgbest[i.ordInd] == 0):
+                    plt.scatter(i.x,i.y,c='b')
+                else:
+                    plt.scatter(i.x,i.y,c='r')
 
-    # for i in ordNodes:
-    #     if(i.xBest == 0):
-    #         plt.scatter(i.x,i.y,c='b')
-    #     else:
-    #         plt.scatter(i.x,i.y,c='r')
-    xcords = [i.x for i in backbone_nodes]
-    ycords = [i.y for i in backbone_nodes]
-    plt.scatter(xcords, ycords, c='k')
-    fig.canvas.draw()
-    fig.canvas.flush_events()
-    time.sleep(0.5)
+        # for i in ordNodes:
+        #     if(i.xBest == 0):
+        #         plt.scatter(i.x,i.y,c='b')
+        #     else:
+        #         plt.scatter(i.x,i.y,c='r')
+        xcords = [i.x for i in backbone_nodes if i.alive==True]
+        ycords = [i.y for i in backbone_nodes if i.alive==True ]
+        plt.scatter(xcords, ycords, c='k')
+        xc2=[i.x for i in nodes if i.alive==False]
+        yc2=[i.y for i in nodes if i.alive==False]
+        plt.scatter(xc2, yc2, facecolors='y', edgecolors='k')
+        #time.sleep(1)
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        time.sleep(0.5)
 
     for i in range(len(X)):
         r1=random.random()
@@ -149,7 +158,12 @@ for t in range(numIter):
         #     print(X[i].count(1))
 
 # print(xgbest.count(1))
-
+print("Dead")
+s=0
+for i in range(len(nodes)):
+    if nodes[i].alive==False:
+        s+=1
+print(s)
 
 
     

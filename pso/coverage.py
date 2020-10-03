@@ -1,7 +1,7 @@
 import backbone
 import math
 import random
-random.seed(10)
+random.seed(20)
 
 
 nPart = 100

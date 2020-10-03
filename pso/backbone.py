@@ -2,13 +2,14 @@ import random
 import math
 import operator
 import  collections
-random.seed(10)
+random.seed(20)
 class node:
 	def __init__(self, x, y):
 		self.ind = 0
 		self.x = x
 		self.y = y
-		self.res = 30
+		self.res = 50
+		self.einit = 50
 		self.q = random.randint(10,20) # random Q
 		self.weight = 0
 		self.indg=0
@@ -17,7 +18,7 @@ class node:
 
 
 radius = 45
-numNodes = 300
+numNodes = 500
 
  
 #nodes = [] TO MAIN
@@ -31,7 +32,7 @@ wt_T = [1.0 for x in range(numNodes)]
 
 N = 2 # Backnode black
 
-E_init = 30
+E_init = 50
 Efs = 10 #PJ/bit/m2
 k = 1000 #bits
 EDA = 5 #nJ/bit/signal
@@ -244,6 +245,8 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordinary):
 	for i in range(numNodes):
 		if col[i] == 1:
 			#print("blac",i)
+			nodes[i].res+=50
+			nodes[i].einit+=50
 			backbone_nodes.append(nodes[i])
 			ctr += 1
 		#elif col[i] == 0:
