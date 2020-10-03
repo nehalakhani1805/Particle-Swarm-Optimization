@@ -20,7 +20,7 @@ class node:
 		self.indg=0		#Index of grey node(if it is grey)
 		self.alive = True	#Node alive or dead
 		self.ordInd = -1	#index of ordNodes nodes(if ordNodes node)
-		#self.einit=30   #initial energy of the node
+		self.einit=30   #initial energy of the node
 
 
 radius = 45	#radius of each node
