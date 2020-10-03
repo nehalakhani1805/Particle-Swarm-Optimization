@@ -2,6 +2,7 @@
 #import backbone
 import math
 import random
+from shapely.geometry import *
 random.seed(10)
 
 
@@ -51,6 +52,30 @@ def fx2_func():
 				print(dis_ij, " ", dis_sinkj)
 			sum_f += math.sqrt(sum_temp / neighbours[ordNodes[j].ind][-1])
 		fX2[ii] = sum_f
+
+
+def fx3_func(numOrdNodes,X,radius,ordNodes,i):
+	fx3 = 0
+	sum_f = 0
+	dummy1 = Point(0, 0).buffer(0)
+	dummy2 = Point(0, 0).buffer(0)
+	union_area = dummy1.union(dummy2)
+	for j in range(numOrdNodes):
+		if(X[i][j] == 1):
+			sum_f += 3.14 * (radius ** 2)
+			# for this_node in ordNodes:
+			# 	if this_node.ind == j
+			a = Point(ordNodes[j].x, ordNodes[j].y).buffer(radius)
+			union_area = union_area.union(a)
+	try:
+		fx3 = sum_f / union_area.area 
+	except:
+		fx3 = 0
+	return fx3
+
+
+
+
 
 
 
