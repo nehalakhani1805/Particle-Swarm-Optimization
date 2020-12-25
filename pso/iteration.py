@@ -7,17 +7,17 @@ import math
 import time
 import matplotlib.pyplot as plt
 #The library below is for interactive graph. To be used only if the user wants to see changes in the graph after every 10 iterations.
-#plt.ion()
+plt.ion()
 #Declaring the parameters for graph according to matplotlib syntax.
 fig, ax = plt.subplots(1,1,figsize=(8,8))
 
 #The 3 commands below are if the user wants to plot the position of the nodes and use the interactive graph.
 #This sets the limit on x-axis as 400
-#plt.xlim((0,400))
+plt.xlim((0,400))
 #This sets the limit on y-axis as 400
-#plt.ylim((0,400))
+plt.ylim((0,400))
 #This is for setting the sink node at (200,200)
-#plt.scatter(200,200,c='y',marker='v',s=200)
+plt.scatter(200,200,c='y',marker='v',s=200)
 
 numNodes=coverage.backbone.numNodes #Total number of nodes
 nodes=coverage.backbone.nodes #Import the list which contains the nodes.
@@ -78,9 +78,12 @@ xener = [] #Initialise an empty list which stores the number of rounds for energ
 yener = [] #Initialise an empty list which stores the energy at certain intervals.
 xdead = [] #Initialise an empty list which stores the number of rounds for ratio of alive nodes to total nodes at certain intervals.
 ydead = [] #Initialise an empty list which stores the ratio of alive nodes to total nodes at certain intervals.
-
+deadnodecount=0
 #Start the iterations
-for t in range(numIter):
+t=-1
+while deadnodecount<485 and t<900:
+
+    t+=1
     print("iteration number ",t)
     # F2(X) is called and the values for each particle is stored in list called temp
     temp=fitness.fx2_func(numOrdNodes,X,ordNodes,particles,neighbours,sink_x,sink_y,nPart)
@@ -157,25 +160,29 @@ for t in range(numIter):
         #Dead nodes = YELLOW with a BLACK outline
         #Sink node = A large YELLOW triangle
         
-        # for i in ordNodes: #Iterate through all the ordinary nodes
-        #     if (i.alive==True): #Check if the node is alive
-        #         if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
-        #             plt.scatter(i.x,i.y,c='b') #Plot the point on the graph
-        #         else: #Check if the node is in awake state. Mark the colour of sleeping nodes as RED.
-        #             plt.scatter(i.x,i.y,c='r') #Plot the point on the graph
+        for i in ordNodes: #Iterate through all the ordinary nodes
+            if (i.alive==True): #Check if the node is alive
+                if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
+                    plt.scatter(i.x,i.y,c='b') #Plot the point on the graph
+                else: #Check if the node is in awake state. Mark the colour of sleeping nodes as RED.
+                    plt.scatter(i.x,i.y,c='r') #Plot the point on the graph
 
-        # xcords = [i.x for i in backbone_nodes if i.alive==True] #Store the x coordinates of the backbone nodes which are alive.
-        # ycords = [i.y for i in backbone_nodes if i.alive==True ] #Store the y coordinates of the backbone nodes which are alive.
-        # plt.scatter(xcords, ycords, c='k') #Plot the points for the backbone nodes as BLACK. 
-        # xc2=[i.x for i in nodes if i.alive==False] #Store the x coordinates of the nodes which are dead.
-        # yc2=[i.y for i in nodes if i.alive==False] #Store the y coordinates of the nodes which are dead.
-        # plt.scatter(xc2, yc2, facecolors='y', edgecolors='k') #Plot the points for the dead nodes as YELLOW with BLACK outline
-        # fig.canvas.draw() #Plot the graph. Make sure that the line plt.ion() is not commented at the start of the file.
-        # fig.canvas.flush_events() #Clear the graph for the next plot.
+        xcords = [i.x for i in backbone_nodes if i.alive==True] #Store the x coordinates of the backbone nodes which are alive.
+        ycords = [i.y for i in backbone_nodes if i.alive==True ] #Store the y coordinates of the backbone nodes which are alive.
+        plt.scatter(xcords, ycords, c='k') #Plot the points for the backbone nodes as BLACK. 
+        xc2=[i.x for i in nodes if i.alive==False] #Store the x coordinates of the nodes which are dead.
+        yc2=[i.y for i in nodes if i.alive==False] #Store the y coordinates of the nodes which are dead.
+        plt.scatter(xc2, yc2, facecolors='y', edgecolors='k') #Plot the points for the dead nodes as YELLOW with BLACK outline
+        fig.canvas.draw() #Plot the graph. Make sure that the line plt.ion() is not commented at the start of the file.
+        fig.canvas.flush_events() #Clear the graph for the next plot.
 
     for i in range(len(X)): #We will calculate the new positions of all the particles.
         r1=random.random()
-        w=wmin+(wmax-wmin)*(numIter-t)/numIter #The formula for computing the inertia. As number of iterstions increases the inertia decreases
+        #w=wmin+(wmax-wmin)*(numIter-t)/numIter #The formula for computing the inertia. As number of iterstions increases the inertia decreases
+        if fX[i] != fpbest[i]:
+            w=wmin+math.exp(-abs(fX[i]-fgbest)/abs(fX[i]-fpbest[i]))
+        else:
+            w=wmin
         #DETERMINE Xi FOR NEXT ITERATION
         if r1<w: #This condition was given in the paper
             #MUTATION

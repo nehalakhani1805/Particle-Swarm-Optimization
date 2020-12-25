@@ -235,7 +235,9 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordNodes):
 	global ctrg 	#count of GREY nodes
 	for i in range(numNodes):	#for every Node
 		if col[i] == 1:		#if the color is BLACK
-			backbone_nodes.append(nodes[i])		#Adding it to backbone node list
+			backbone_nodes.append(nodes[i])	#Adding it to backbone node list
+			nodes[i].res+=30
+			nodes[i].einit+=30	
 			ctr += 1	#increment of count of BLACK nodes
 
 		else:	#else if the node is GREY
