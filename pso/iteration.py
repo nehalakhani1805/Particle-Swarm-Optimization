@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 plt.ion()
 #Declaring the parameters for graph according to matplotlib syntax.
 fig, ax = plt.subplots(1,1,figsize=(8,8))
-
+E_threshold = 3 * 1e-4
 #The 3 commands below are if the user wants to plot the position of the nodes and use the interactive graph.
 #This sets the limit on x-axis as 400
 plt.xlim((0,400))
@@ -18,6 +18,18 @@ plt.xlim((0,400))
 plt.ylim((0,400))
 #This is for setting the sink node at (200,200)
 plt.scatter(200,200,c='y',marker='v',s=200)
+
+E_init = coverage.backbone.E_init
+Efs = coverage.backbone.Efs
+k = coverage.backbone.k
+EDA = coverage.backbone.EDA
+Eelec = coverage.backbone.Eelec
+Eamp = coverage.backbone.Eamp
+d0 = coverage.backbone.d0
+
+
+
+
 
 numNodes=coverage.backbone.numNodes #Total number of nodes
 nodes=coverage.backbone.nodes #Import the list which contains the nodes.
@@ -53,8 +65,8 @@ xpbest=[[] for i in range(nPart)] #Initialise the local best value of X[i], i.e.
 #Initiliase the parameters for PSO.
 wmax=0.9
 wmin=0.4
-c1=0.4
-c2=0.4
+c1=0.3
+c2=0.7
 
 ctr = coverage.backbone.ctr #ctr represents the number of backbone nodes.
 ctrg = coverage.backbone.ctrg #ctrg represents the number of ordinary nodes.
@@ -66,9 +78,14 @@ def crossover(a,b): #This function is sued for applying the crossover operator.
     for i in range(len(a)):
         y=random.random() #If the value of y is less than 0.5 then bit of 'a' gets appended or else bit of 'b' gets appended.
         if y<=0.5:
-            temp.append(a[i])
+        #     temp.append(a[i])
+            temp.append(0)
         else:
-            temp.append(b[i])
+            temp.append(1)
+        #     temp.append(b[i])
+    # first_half = (int)(len(a) / 2)
+    # temp.append(a[0:first_half])
+    # temp.append(b[first_half:len(a)])
     return temp
 
 diction=coverage.backbone.assign_head(backbone_nodes,ordNodes) #Import the dictionary which has the key as ordinary node and value as the cluster head
@@ -102,27 +119,39 @@ while deadnodecount<485 and t<900:
         if(i.alive == True and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
             bb=diction[i] #Access the cluster head of that ordinary node
             dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2) #Find the distance between the ordinary node and cluster head
+            if dist>d0:
+                eTemp = k * (Eelec + Eamp * (dist ** 4))
+            else:
+                eTemp = k * (Eelec + Efs * (dist ** 2))
             if i.res>=0: #Check if the residual energy of the ordinary node is greater than 0.
-                i.res-=0.01*dist #Subtract the cost of transmission of message to cluster head.
+                i.res -= eTemp #Subtract the cost of transmission of message to cluster head.
                 if i.res<=0: #If the energy drops to 0 then the ordinary node is dead.
                     i.res=0
                     i.alive = False
+                    ctrg -= 1
+                    numOrdNodes -= 1
 
             dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2) #Find the distance between the cluster head and sink node.
+            if dist2>d0:
+                eTemp2 = k * (Eelec + Eamp * (dist2 ** 4))
+            else:
+                eTemp2 = k * (Eelec + Efs * (dist2 ** 2))
             if(nodes[bb.ind].res>=0): #Check if the residual energy of the backbone node is greater than 0.
-                nodes[bb.ind].res -= 0.0075*dist #Subtract the cost of transmission of message to sink node.
-                if(nodes[bb.ind].res<=0): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
-                    nodes[bb.ind].res=0
-                    nodes[bb.ind].alive = False
+                nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
+                if(nodes[bb.ind].res<=E_threshold): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
+                    if nodes[bb.ind].res <= 0:
+                        nodes[bb.ind].res=0
+                        nodes[bb.ind].alive = False
                     #The function below return the updated list of ordinary nodes and backbone nodes
                     ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
                     #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
                     diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
                 else:
-                    nodes[bb.ind].res -= 0.0075*dist2 #Subtract the cost of transmission of message to sink node.
-                    if(nodes[bb.ind].res<=0): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
-                        nodes[bb.ind].res=0
-                        nodes[bb.ind].alive = False
+                    nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
+                    if(nodes[bb.ind].res<=E_threshold): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
+                        if nodes[bb.ind].res <= 0:
+                            nodes[bb.ind].res=0
+                            nodes[bb.ind].alive = False
                         #The function below return the updated list of ordinary nodes and backbone nodes
                         ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
                         #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
@@ -143,7 +172,7 @@ while deadnodecount<485 and t<900:
                                                             # values for y axis of (ratio of alive nodes to dead nodes) vs (rounds) graph. 
         xdead.append(t) #Append the value in the list which holds
                         # values for x axis of (ratio of alive nodes to dead nodes) vs (rounds) graph.
-        
+        plt.clf()
         plt.plot(xener,yener,'r+-') #Plot the list of values for (total energy) vs (rounds) graph.
         plt.savefig("energraph2.png") #Save the graph of (total energy) vs (rounds) at current iteration.
         plt.clf() #Clear the graph for the next plot.
