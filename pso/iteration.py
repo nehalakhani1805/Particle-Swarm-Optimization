@@ -135,8 +135,7 @@ ydead = [] #Initialise an empty list which stores the ratio of alive nodes to to
 deadnodecount=0
 #Start the iterations
 t=-1
-while deadnodecount<485 and t<1201:
-
+while t<1201:
     t+=1
     print("iteration number ",t)
     # F2(X) is called and the values for each particle is stored in list called temp
@@ -153,9 +152,9 @@ while deadnodecount<485 and t<1201:
     
     
     for i in ordNodes: #Subtract the energy
-        # print(len(ordNodes),"len of ordnodes")
-        # print(i.ordInd,"orInd")
-        if(i.alive == True and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
+        # print(len(ordNodes),"len of ordnodes")213
+        # print(i.ordInd,"orInd")220
+        if(i.res>0 and i.ordInd<len(ordNodes) and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
             bb=diction[i] #Access the cluster head of that ordinary node
             dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2) #Find the distance between the ordinary node and cluster head
             if dist>d0:
@@ -194,7 +193,7 @@ while deadnodecount<485 and t<1201:
                 ordNodes.append(bb)
                 # numOrdNodes+=1
                 # ctr-=1
-                bb.ordInd=ctrg
+                bb.ordInd=len(ordNodes)
                 ctrg+=1
                 numOrdNodes+=1                
                 ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
@@ -230,7 +229,7 @@ while deadnodecount<485 and t<1201:
         deadnodecount = 0 #Initialise the variable which will store the total number of dead nodes.
         ener_init_tot = 0
         for i in nodes: #Iterate through all the nodes.
-            if i.alive==False: #If node is dead then add it to deadnodecount
+            if i.res<=0: #If node is dead then add it to deadnodecount
                 deadnodecount+=1
             ener_init_tot += i.einit
         yener.append((ener_init_tot-enertot)/ener_init_tot) #Append the value in the list which holds values for y axis of (total energy) vs (rounds) graph.
@@ -256,7 +255,7 @@ while deadnodecount<485 and t<1201:
         plt.savefig("energraph2.png") #Save the graph of (total energy) vs (rounds) at current iteration.
         plt.clf() #Clear the graph for the next plot.
         plt.plot(xdead,ydead,'r+-') #Plot the list of values for (ratio of alive nodes to dead nodes) vs (rounds) graph.
-        plt.plot(pso_paper_x_100,pso_paper_ns_y_100,'b.-')
+        plt.plot(pso_paper_x_200,pso_paper_ns_y_200,'b.-')
         plt.savefig("deadgraph.png") #Save the graph of (ratio of alive nodes to dead nodes) vs (rounds) graph.
         plt.clf() #Clear the graph for the next plot.
         
@@ -270,17 +269,17 @@ while deadnodecount<485 and t<1201:
         #Sink node = A large YELLOW triangle
         plt.scatter(200,200,c='y',marker='v',s=200)
         for i in ordNodes: #Iterate through all the ordinary nodes
-            if (i.alive==True): #Check if the node is alive
+            if (i.res>0): #Check if the node is alive
                 if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
                     plt.scatter(i.x,i.y,c='b') #Plot the point on the graph
                 else: #Check if the node is in awake state. Mark the colour of sleeping nodes as RED.
                     plt.scatter(i.x,i.y,c='r') #Plot the point on the graph
 
-        xcords = [i.x for i in backbone_nodes if i.alive==True] #Store the x coordinates of the backbone nodes which are alive.
-        ycords = [i.y for i in backbone_nodes if i.alive==True ] #Store the y coordinates of the backbone nodes which are alive.
+        xcords = [i.x for i in backbone_nodes if i.res>0] #Store the x coordinates of the backbone nodes which are alive.
+        ycords = [i.y for i in backbone_nodes if i.res>0] #Store the y coordinates of the backbone nodes which are alive.
         plt.scatter(xcords, ycords, c='k') #Plot the points for the backbone nodes as BLACK. 
-        xc2=[i.x for i in nodes if i.alive==False] #Store the x coordinates of the nodes which are dead.
-        yc2=[i.y for i in nodes if i.alive==False] #Store the y coordinates of the nodes which are dead.
+        xc2=[i.x for i in nodes if i.res<=0] #Store the x coordinates of the nodes which are dead.
+        yc2=[i.y for i in nodes if i.res<=0] #Store the y coordinates of the nodes which are dead.
         plt.scatter(xc2, yc2, facecolors='y', edgecolors='k') #Plot the points for the dead nodes as YELLOW with BLACK outline
         fig.canvas.draw() #Plot the graph. Make sure that the line plt.ion() is not commented at the start of the file.
         fig.canvas.flush_events() #Clear the graph for the next plot.
@@ -310,6 +309,6 @@ while deadnodecount<485 and t<1201:
 print("Total number of dead nodes are: ")
 deadnodes = 0 #Initialise the variable which will store the total number of dead nodes.
 for i in range(len(nodes)): #Iterate through all the nodes.
-    if nodes[i].alive==False: #If node is dead then add it to deadnodes
+    if nodes[i].res<=0: #If node is dead then add it to deadnodes
         deadnodes+=1
 print(deadnodes)
