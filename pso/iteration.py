@@ -8,9 +8,13 @@ import time
 import matplotlib.pyplot as plt
 #The library below is for interactive graph. To be used only if the user wants to see changes in the graph after every 10 iterations.
 plt.ion()
+# diction=coverage.backbone.diction
+backbone_nodes=coverage.backbone.backbone_nodes
 #Declaring the parameters for graph according to matplotlib syntax.
 fig, ax = plt.subplots(1,1,figsize=(8,8))
-E_threshold = 3 * 1e-4
+# E_threshold = 3 * 1e-4
+
+
 #The 3 commands below are if the user wants to plot the position of the nodes and use the interactive graph.
 #This sets the limit on x-axis as 400
 plt.xlim((0,400))
@@ -106,6 +110,24 @@ def crossover(a,b): #This function is used for applying the crossover operator.
 diction=coverage.backbone.assign_head(backbone_nodes,ordNodes) #Import the dictionary which has the key as ordinary node and value as the cluster head
                                                              #  to which the ordinary node is assigned to.
 
+max_dist_for_bb = [0.0 for x in range(len(backbone_nodes))]
+for i in range(len(ordNodes)):
+    if math.sqrt((ordNodes[i].x - diction[ordNodes[i]].x)**2 + (ordNodes[i].y - diction[ordNodes[i]].y)**2)>max_dist_for_bb[diction[ordNodes[i]].bbind]:
+        max_dist_for_bb[diction[ordNodes[i]].bbind]=math.sqrt((ordNodes[i].x - diction[ordNodes[i]].x)**2 + (ordNodes[i].y - diction[ordNodes[i]].y)**2)
+E_threshold=[0.0 for x in range(len(backbone_nodes))]
+for i in backbone_nodes:
+    eTemp2=0
+    eTemp3=0
+    dist=math.sqrt((i.x-sink_x)**2 + (i.y-sink_y)**2) #Find the distance between the ordinary node and cluster head
+    if dist>d0:
+        eTemp3 = k * (Eelec + Eamp * (dist ** 4))
+    else:
+        eTemp3 = k * (Eelec + Efs * (dist ** 2))
+    if max_dist_for_bb[i.bbind]>d0:
+        eTemp2 = k * (Eelec + Eamp * (max_dist_for_bb[i.bbind] ** 4))
+    else:
+        eTemp2 = k * (Eelec + Efs * (max_dist_for_bb[i.bbind]** 2))
+    E_threshold[i.bbind]=eTemp3+eTemp2
 xener = [] #Initialise an empty list which stores the number of rounds for energy at certain intervals.
 yener = [] #Initialise an empty list which stores the energy at certain intervals.
 xdead = [] #Initialise an empty list which stores the number of rounds for ratio of alive nodes to total nodes at certain intervals.
@@ -131,6 +153,8 @@ while deadnodecount<485 and t<1201:
     
     
     for i in ordNodes: #Subtract the energy
+        # print(len(ordNodes),"len of ordnodes")
+        # print(i.ordInd,"orInd")
         if(i.alive == True and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
             bb=diction[i] #Access the cluster head of that ordinary node
             dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2) #Find the distance between the ordinary node and cluster head
@@ -141,40 +165,59 @@ while deadnodecount<485 and t<1201:
 
             if i.res>=0: #Check if the residual energy of the ordinary node is greater than 0.
                 i.res -= eTemp #Subtract the cost of transmission of message to cluster head.
-                print(i.res,"ordnode res ener")
+                # print(i.res,"ordnode res ener")
                 if i.res<=0: #If the energy drops to 0 then the ordinary node is dead.
                     i.res=0
                     i.alive = False
                     ctrg -= 1
                     numOrdNodes -= 1
-
-            dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2) #Find the distance between the cluster head and sink node.
-            if dist2>d0:
-                eTemp2 = k * (Eelec + Eamp * (dist2 ** 4))
-            else:
-                eTemp2 = k * (Eelec + Efs * (dist2 ** 2))
-            
-            if(nodes[bb.ind].res>=0): #Check if the residual energy of the backbone node is greater than 0.
-                nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
-                if(nodes[bb.ind].res<=E_threshold): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
-                    if nodes[bb.ind].res <= 0:
-                        nodes[bb.ind].res=0
-                        nodes[bb.ind].alive = False
-                    #The function below return the updated list of ordinary nodes and backbone nodes
-                    ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
-                    #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
-                    diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+            if(nodes[bb.ind].res>=E_threshold[bb.bbind]):
+                dist2=math.sqrt((bb.x-sink_x)**2 + (bb.y-sink_y)**2) #Find the distance between the cluster head and sink node.
+                if dist2>d0:
+                    eTemp2 = k * (Eelec + Eamp * (dist2 ** 4))
                 else:
-                    nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
-                    print(nodes[bb.ind].res, "bb node res ener")
-                    if(nodes[bb.ind].res<=E_threshold): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
-                        if nodes[bb.ind].res <= 0:
-                            nodes[bb.ind].res=0
-                            nodes[bb.ind].alive = False
-                        #The function below return the updated list of ordinary nodes and backbone nodes
-                        ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
-                        #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
-                        diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+                    eTemp2 = k * (Eelec + Efs * (dist2 ** 2))
+                nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
+                nodes[bb.ind].res-=eTemp
+            elif(nodes[bb.ind].res<=0):
+                i.res=0
+                i.alive = False
+                ctrg -= 1
+                ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+            else:
+                # backbone_nodes.remove(bb)
+                # bbind_ctr=0
+                # for i in range(len(backbone_nodes)):
+                #     backbone_nodes[i].bbind=bbind_ctr
+                #     bbind_ctr+=1
+                ordNodes.append(bb)
+                # numOrdNodes+=1
+                # ctr-=1
+                bb.ordInd=ctrg
+                ctrg+=1
+                numOrdNodes+=1                
+                ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+                # if(nodes[bb.ind].res<=E_threshold[bb.bbind]): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
+                #     if nodes[bb.ind].res <= 0:
+                #         nodes[bb.ind].res=0
+                #         nodes[bb.ind].alive = False
+                #     #The function below return the updated list of ordinary nodes and backbone nodes
+                #     ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                #     #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
+                #     diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
+                # else:
+                #     nodes[bb.ind].res -= eTemp2 #Subtract the cost of transmission of message to sink node.
+                #     print(nodes[bb.ind].res, "bb node res ener")
+                #     if(nodes[bb.ind].res<=E_threshold): #If the energy drops to 0 then the backbone node is dead and we have to repair it.
+                #         if nodes[bb.ind].res <= 0:
+                #             nodes[bb.ind].res=0
+                #             nodes[bb.ind].alive = False
+                #         #The function below return the updated list of ordinary nodes and backbone nodes
+                #         ordNodes,backbone_nodes,numOrdNodes=backbone2.backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,numOrdNodes,bb.ind,col)
+                #         #The function below assigns new cluster heads to each ordinary node as a new backbone is formed.
+                #         diction=coverage.backbone.assign_head(backbone_nodes,ordNodes)
     
     if t%10 == 0: #Whenever this condition is true the state of the network will be captured and stored for different graphs.
         

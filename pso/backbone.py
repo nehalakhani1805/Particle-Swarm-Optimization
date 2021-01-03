@@ -21,7 +21,7 @@ class node:
 		self.alive = True	#Node alive or dead
 		self.ordInd = -1	#index of ordNodes nodes(if ordNodes node)
 		self.einit = 1   #initial energy of the node
-
+		self.bbind=-1
 
 radius = 35	#radius of each node
 numNodes = 300	# Total Number of nodes present
@@ -250,22 +250,27 @@ ctrg=0	#count of GREY nodes
 def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordNodes):
 	global ctr 		#count of BLACK nodes
 	global ctrg 	#count of GREY nodes
+	
 	for i in range(numNodes):	#for every Node
 		if col[i] == 1:		#if the color is BLACK
 			backbone_nodes.append(nodes[i])	#Adding it to backbone node list
 			nodes[i].res+=extra_energy
 			nodes[i].einit+=extra_energy
+			nodes[i].bbind=ctr
+			
 			ctr += 1	#increment of count of BLACK nodes
 
 		else:	#else if the node is GREY
 			nodes[i].ordInd = ctrg	#assigning the nodes as Ordinary node and giving its index
 			ordNodes.append(nodes[i])	#adding that node in ordinary nodes(all GREY nodes)
-			ctrg+=1		#incrementing the count of GREY nodes
-
+			ctrg+=1		#incrementing the count of GREY
+			
 
 #assigning the nodes head
+# diction={}
 def assign_head(backbone_nodes, ordNodes):
-	diction={}	#dictionary(hash map) that stores the cluster head of all ordinary nodes
+	# global diction	#dictionary(hash map) that stores the cluster head of all ordinary nodes
+	diction={}
 	for i in range(len(ordNodes)):	#for all the ordinary nodes(Grey Nodes)
 		mini=math.inf 	#initialize minimum as infinity
 		for j in range(len(backbone_nodes)):	#for all the backbone nodes

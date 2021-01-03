@@ -14,8 +14,12 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 	n_of_n=[] #array which stores the neighbours of the above grey nodes
 	new_backbone=[] #new array which consists of only the new nodes added to the backbone and not the whole backbone
 	backbone_nodes.remove(nodes[temp]) #temp is the index of the dead node, that node is removed from the existing backbone
-	if nodes[temp].res > 0:
-		ordNodes.append(nodes[temp]) 
+	bbind_ctr=0
+	for i in range(len(backbone_nodes)):
+		backbone_nodes[i].bbind=bbind_ctr
+		bbind_ctr+=1
+	# if nodes[temp].res > 0:
+	# 	ordNodes.append(nodes[temp]) 
 		
 	ctr-=1  #decrease the total number of nodes in the backbone by 1
 	for i in range(0,len(neighbours[temp])-1):  #for loop to traverse through the neighbours of the dead node
@@ -35,11 +39,15 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 						candidates[i].res+=extra_energy #increase the residual energy of the candidate 
 						candidates[i].einit+=extra_energy #increase the initial energy of the candidate
 						backbone_nodes.append(candidates[i]) #add the candidate to the list of backbone nodes
+						candidates[i].bbind=len(backbone_nodes)-1
+						ctr+=1
 						if candidates[i] in ordNodes: 
 							ordNodes.remove(candidates[i]) #remove the candidate from the list of ordinary nodes
-							ctrg-=1							#decrease the count of ordinary nodes by 1
-						new_backbone.append(candidates[i]) #add the candidate to the list of newly added nodes to the backbone
-						ctr+=1 								#increase the number of backbone nodes by 1
+							ctrg-=1	
+							for ii in range(len(ordNodes)):
+								ordNodes[ii].ordInd=ii						#decrease the count of ordinary nodes by 1
+						# new_backbone.append(candidates[i]) #add the candidate to the list of newly added nodes to the backbone
+						 								#increase the number of backbone nodes by 1
 						return ordNodes,backbone_nodes,ctrg
 
 	return ordNodes,backbone_nodes,ctrg  #return the ordinary nodes, backbone nodes and the count of ordinary nodes
