@@ -10,8 +10,9 @@ def fx1_func(numOrdNodes,X,E_init,ordNodes,i):
 	sum_temp = 0 #temporary sum variable
 	fX1 = 0      #value to return 
 	for j in range(0,len(ordNodes)): #traverse through ordinary nodes
-		# print(type(X[i][j]), type(ordNodes[j].res), type(sum_temp))
-		sum_temp += X[i][j] * (ordNodes[j].res) #sum of residual energy of alive ordinary nodes
+		if j<len(X[i]):
+			# print(type(X[i][j]), type(ordNodes[j].res), type(sum_temp))
+			sum_temp += X[i][j] * (ordNodes[j].res) #sum of residual energy of alive ordinary nodes
 	fX1 = 1 - (sum_temp / (len(ordNodes) * E_init)) #subtract the sum_temp value from 1 to make fX1 a minimization function
 	return fX1 
 
@@ -42,7 +43,7 @@ def fx3_func(numOrdNodes,X,radius,ordNodes,i):
 	dummy2 = Point(0, 0).buffer(0)	#dummy point of radius zero
 	union_area = dummy1.union(dummy2)	#dummy1 and dummy2 used to initialize union_area
 	for j in range(numOrdNodes):	#traverse through ordinary nodes
-		if(X[i][j] == 1):			#if node is awake
+		if(j<len(X[i]) and X[i][j] == 1):			#if node is awake
 			sum_f += 3.14 * (radius ** 2)	# add the area to sum_f
 			a = Point(ordNodes[j].x, ordNodes[j].y).buffer(radius) #area of ordinary sensor node
 			union_area = union_area.union(a) #union of that sensor node with the current union
