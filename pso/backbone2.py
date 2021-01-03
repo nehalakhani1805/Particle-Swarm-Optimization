@@ -1,6 +1,7 @@
 
 
-def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg,temp,col):
+def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg,temp,col,extra_energy = 1):
+	print("Repair called")
 	#ordNodes - list containing ordinary nodes
 	#nodes - list containing all the nodes 
 	#numNodes - total no of nodes
@@ -31,8 +32,8 @@ def backbone_repair(ordNodes,nodes,numNodes, backbone_nodes, neighbours,ctr,ctrg
 				if k!=j and k!=len(n_of_n)-1: #if neighbour is not equal to itself and if the index is not the last index
 					n4=neighbours[n_of_n[k].ind] #n4 stores the neighbours of the above obtained node
 					if n_of_n[j] not in n4: #if the 2 neighbours of the candidate nodes are not previously connected, candidate becomes the replacement
-						# candidates[i].res+=2 #increase the residual energy of the candidate 
-						# candidates[i].einit+=2 #increase the initial energy of the candidate
+						candidates[i].res+=extra_energy #increase the residual energy of the candidate 
+						candidates[i].einit+=extra_energy #increase the initial energy of the candidate
 						backbone_nodes.append(candidates[i]) #add the candidate to the list of backbone nodes
 						if candidates[i] in ordNodes: 
 							ordNodes.remove(candidates[i]) #remove the candidate from the list of ordinary nodes

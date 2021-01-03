@@ -9,7 +9,7 @@ def fx1_func(numOrdNodes,X,E_init,ordNodes,i):
 	# 
 	sum_temp = 0 #temporary sum variable
 	fX1 = 0      #value to return 
-	for j in range(numOrdNodes): #traverse through ordinary nodes
+	for j in range(0,len(ordNodes)): #traverse through ordinary nodes
 		# print(type(X[i][j]), type(ordNodes[j].res), type(sum_temp))
 		sum_temp += X[i][j] * (ordNodes[j].res) #sum of residual energy of alive ordinary nodes
 	fX1 = 1 - (sum_temp / (len(ordNodes) * E_init)) #subtract the sum_temp value from 1 to make fX1 a minimization function

@@ -14,16 +14,16 @@ class node:
 		self.ind = 0	#Node index
 		self.x = x    #x co-ordinate
 		self.y = y    #y co-ordinate
-		self.res = 30	#Residual Energy
-		self.q = random.randint(10,20) 	# random Q
+		self.res = 1	#Residual Energy
+		self.q = 1 	# random Q
 		self.weight = 0		#T(i)
 		self.indg= 0		#Index of grey node(if it is grey)
 		self.alive = True	#Node alive or dead
 		self.ordInd = -1	#index of ordNodes nodes(if ordNodes node)
-		self.einit = 30   #initial energy of the node
+		self.einit = 1   #initial energy of the node
 
 
-radius = 45	#radius of each node
+radius = 35	#radius of each node
 numNodes = 300	# Total Number of nodes present
  
 costs = []	# list to store the cost used in T(i)
@@ -31,17 +31,18 @@ costs = []	# list to store the cost used in T(i)
 #initial list to store the values of T(i)
 wt_T = [1.0 for x in range(numNodes)]
 
-N = 2 # Backnode black(number of nodes from neighbours to be selected as black)
+N = 1 # Backnode black(number of nodes from neighbours to be selected as black)
 
 
 #Initialization of constants
-E_init = 2  
+E_init = 1  
+extra_energy = 1
 Efs = 10 * 1e-12 #Pico Joule/bit/m2
-k = 1000 #bits
+k = 10000 #bits
 EDA = 5 * 1e-9 #nJ/bit/signal
 Eelec = 50 * 1e-9 #nJ/bit
 Eamp = 0.0013 * 1e-12 #PJ/bit/m4
-d0 = 90 #m
+d0 = 87 #m
 
 
 #Initialization of constants
@@ -116,10 +117,15 @@ def costPart(i,cMax, neighbours, E_tx_arr):
 
 		#Calculating ETx(i) and adding it to list
 		#𝐸𝑇𝑥(𝑖) denotes the energy cost of node 𝑖 in transmitting one bit of message
-		eTemp = Eelec + Efs * ((xi - neighbours[i][j].x) ** 2 + (yi - neighbours[i][j].y) ** 2)
+		dist = ((xi - neighbours[i][j].x) ** 2 + (yi - neighbours[i][j].y) ** 2)
+		eTemp = Eelec + Efs * dist
 		E_tx_arr[i].append(eTemp)
 
 		num = eTemp * E_init	#E_init->inital enerygy|numerator of cost formula
+		m = 46.357
+		c = -9.642
+		rssi = -m * math.log10(dist) + c
+		nodes[i].q = (10 ** (rssi/10))/1000
 		denom = nodes[i].q * neighbours[i][j].res   #denominator of cost formula
 		cost += math.sqrt(num / denom)	#calculaing cost
 	
@@ -247,8 +253,8 @@ def testing_b2(numNodes, nodes, backbone_nodes, neighbours,ordNodes):
 	for i in range(numNodes):	#for every Node
 		if col[i] == 1:		#if the color is BLACK
 			backbone_nodes.append(nodes[i])	#Adding it to backbone node list
-			# nodes[i].res+=30
-			# nodes[i].einit+=30	
+			nodes[i].res+=extra_energy
+			nodes[i].einit+=extra_energy
 			ctr += 1	#increment of count of BLACK nodes
 
 		else:	#else if the node is GREY

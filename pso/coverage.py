@@ -112,7 +112,7 @@ def find_cov():
 # main function 
 if __name__ != '__main__':
     cov_s_without_s, cov_s,X=find_cov() #call the find_cov function
-    print(numOrdNodes)  #print number of ordinary nodes
+    print("ordinary nodes",len(ordNodes))  #print number of ordinary nodes
 
 
 
