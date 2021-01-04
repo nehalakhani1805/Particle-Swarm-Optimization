@@ -7,7 +7,7 @@ import math
 import time
 import matplotlib.pyplot as plt
 #The library below is for interactive graph. To be used only if the user wants to see changes in the graph after every 10 iterations.
-plt.ion()
+# plt.ion()
 # diction=coverage.backbone.diction
 backbone_nodes=coverage.backbone.backbone_nodes
 #Declaring the parameters for graph according to matplotlib syntax.
@@ -17,11 +17,11 @@ fig, ax = plt.subplots(1,1,figsize=(8,8))
 
 #The 3 commands below are if the user wants to plot the position of the nodes and use the interactive graph.
 #This sets the limit on x-axis as 400
-plt.xlim((0,400))
-#This sets the limit on y-axis as 400
-plt.ylim((0,400))
-#This is for setting the sink node at (200,200)
-plt.scatter(200,200,c='y',marker='v',s=200)
+# plt.xlim((0,400))
+# #This sets the limit on y-axis as 400
+# plt.ylim((0,400))
+# #This is for setting the sink node at (200,200)
+# plt.scatter(200,200,c='y',marker='v',s=200)
 
 E_init = coverage.backbone.E_init
 Efs = coverage.backbone.Efs
@@ -154,7 +154,7 @@ while t<1201:
     for i in ordNodes: #Subtract the energy
         # print(len(ordNodes),"len of ordnodes")213
         # print(i.ordInd,"orInd")220
-        if(i.res>0 and i.ordInd<len(ordNodes) and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
+        if(i.res>0 and i.ordInd<len(xgbest) and xgbest[i.ordInd] == 1): #Check if the ordinary node is and not dead and alive.
             bb=diction[i] #Access the cluster head of that ordinary node
             dist=math.sqrt((i.x-bb.x)**2 + (i.y-bb.y)**2) #Find the distance between the ordinary node and cluster head
             if dist>d0:
@@ -267,22 +267,22 @@ while t<1201:
         #Backbone nodes = BLACK
         #Dead nodes = YELLOW with a BLACK outline
         #Sink node = A large YELLOW triangle
-        plt.scatter(200,200,c='y',marker='v',s=200)
-        for i in ordNodes: #Iterate through all the ordinary nodes
-            if (i.res>0): #Check if the node is alive
-                if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
-                    plt.scatter(i.x,i.y,c='b') #Plot the point on the graph
-                else: #Check if the node is in awake state. Mark the colour of sleeping nodes as RED.
-                    plt.scatter(i.x,i.y,c='r') #Plot the point on the graph
+        # plt.scatter(200,200,c='y',marker='v',s=200)
+        # for i in ordNodes: #Iterate through all the ordinary nodes
+        #     if (i.res>0): #Check if the node is alive
+        #         if(xgbest[i.ordInd] == 0): #Check if the node is in sleep state. Mark the colour of sleeping nodes as BLUE.
+        #             plt.scatter(i.x,i.y,c='b') #Plot the point on the graph
+        #         else: #Check if the node is in awake state. Mark the colour of sleeping nodes as RED.
+        #             plt.scatter(i.x,i.y,c='r') #Plot the point on the graph
 
-        xcords = [i.x for i in backbone_nodes if i.res>0] #Store the x coordinates of the backbone nodes which are alive.
-        ycords = [i.y for i in backbone_nodes if i.res>0] #Store the y coordinates of the backbone nodes which are alive.
-        plt.scatter(xcords, ycords, c='k') #Plot the points for the backbone nodes as BLACK. 
-        xc2=[i.x for i in nodes if i.res<=0] #Store the x coordinates of the nodes which are dead.
-        yc2=[i.y for i in nodes if i.res<=0] #Store the y coordinates of the nodes which are dead.
-        plt.scatter(xc2, yc2, facecolors='y', edgecolors='k') #Plot the points for the dead nodes as YELLOW with BLACK outline
-        fig.canvas.draw() #Plot the graph. Make sure that the line plt.ion() is not commented at the start of the file.
-        fig.canvas.flush_events() #Clear the graph for the next plot.
+        # xcords = [i.x for i in backbone_nodes if i.res>0] #Store the x coordinates of the backbone nodes which are alive.
+        # ycords = [i.y for i in backbone_nodes if i.res>0] #Store the y coordinates of the backbone nodes which are alive.
+        # plt.scatter(xcords, ycords, c='k') #Plot the points for the backbone nodes as BLACK. 
+        # xc2=[i.x for i in nodes if i.res<=0] #Store the x coordinates of the nodes which are dead.
+        # yc2=[i.y for i in nodes if i.res<=0] #Store the y coordinates of the nodes which are dead.
+        # plt.scatter(xc2, yc2, facecolors='y', edgecolors='k') #Plot the points for the dead nodes as YELLOW with BLACK outline
+        # fig.canvas.draw() #Plot the graph. Make sure that the line plt.ion() is not commented at the start of the file.
+        # fig.canvas.flush_events() #Clear the graph for the next plot.
 
     for i in range(len(X)): #We will calculate the new positions of all the particles.
         r1=random.random()
